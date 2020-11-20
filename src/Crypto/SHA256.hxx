@@ -29,12 +29,13 @@
 
 #pragma once
 
-#include "Util/ConstBuffer.hxx"
-#include "Util/Compiler.h"
+#include "util/ConstBuffer.hxx"
+#include "util/Compiler.h"
 
 #include <sodium/crypto_hash_sha256.h>
 
 #include <array>
+#include <cstddef> // for std::byte
 
 class SHA256State {
 	crypto_hash_sha256_state state;

@@ -33,22 +33,22 @@ Copyright_License {
 #include "Port/ConfiguredPort.hpp"
 #include "Port/DumpPort.hpp"
 #include "NMEA/Info.hpp"
-#include "Thread/Mutex.hxx"
-#include "Util/StringAPI.hxx"
-#include "Util/ConvertString.hpp"
-#include "Util/Exception.hxx"
+#include "thread/Mutex.hxx"
+#include "util/StringAPI.hxx"
+#include "util/ConvertString.hpp"
+#include "util/Exception.hxx"
 #include "Logger/NMEALogger.hpp"
 #include "Language/Language.hpp"
 #include "Operation/Operation.hpp"
-#include "OS/Path.hpp"
+#include "system/Path.hpp"
 #include "../Simulator.hpp"
 #include "Input/InputQueue.hpp"
 #include "LogFile.hpp"
 #include "Job/Job.hpp"
 
 #ifdef ANDROID
-#include "Java/Object.hxx"
-#include "Java/Global.hxx"
+#include "java/Object.hxx"
+#include "java/Global.hxx"
 #include "Android/InternalSensors.hpp"
 #include "Android/GliderLink.hpp"
 #include "Android/Main.hpp"
@@ -1177,14 +1177,14 @@ DeviceDescriptor::OnJobFinished() noexcept
 }
 
 void
-DeviceDescriptor::PortStateChanged()
+DeviceDescriptor::PortStateChanged() noexcept
 {
   if (port_listener != nullptr)
     port_listener->PortStateChanged();
 }
 
 void
-DeviceDescriptor::PortError(const char *msg)
+DeviceDescriptor::PortError(const char *msg) noexcept
 {
   {
     TCHAR buffer[64];
@@ -1204,8 +1204,8 @@ DeviceDescriptor::PortError(const char *msg)
     port_listener->PortError(msg);
 }
 
-void
-DeviceDescriptor::DataReceived(const void *data, size_t length)
+bool
+DeviceDescriptor::DataReceived(const void *data, size_t length) noexcept
 {
   if (monitor != nullptr)
     monitor->DataReceived(data, length);
@@ -1225,15 +1225,17 @@ DeviceDescriptor::DataReceived(const void *data, size_t length)
       device_blackboard->ScheduleMerge();
     }
 
-    return;
+    return true;
   }
 
   if (!IsNMEAOut())
     PortLineSplitter::DataReceived(data, length);
+
+  return true;
 }
 
-void
-DeviceDescriptor::LineReceived(const char *line)
+bool
+DeviceDescriptor::LineReceived(const char *line) noexcept
 {
   NMEALogger::Log(line);
 
@@ -1242,4 +1244,6 @@ DeviceDescriptor::LineReceived(const char *line)
 
   if (ParseLine(line))
     device_blackboard->ScheduleMerge();
+
+  return true;
 }

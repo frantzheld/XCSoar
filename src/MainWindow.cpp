@@ -173,6 +173,7 @@ MainWindow::Initialise()
                      CommonInterface::GetUISettings().custom_dpi);
 #ifdef DRAW_MOUSE_CURSOR
   SetCursorSize(CommonInterface::GetDisplaySettings().cursor_size);
+  SetCursorColorsInverted(CommonInterface::GetDisplaySettings().invert_cursor_colors);
 #endif
 
   LogFormat("Initialise fonts");
@@ -292,7 +293,27 @@ MainWindow::ReinitialiseLayoutTA(PixelRect rc,
 {
   unsigned sz = std::min(layout.control_size.cy,
                          layout.control_size.cx) * 2;
-  rc.right = rc.left + sz;
+
+  switch (CommonInterface::GetUISettings().thermal_assistant_position) {
+  case (UISettings::ThermalAssistantPosition::BOTTOM_LEFT_AVOID_IB):
+    rc.bottom = GetMainRect().bottom;
+    rc.left = GetMainRect().left;
+    rc.right = rc.left + sz;
+    break;
+  case (UISettings::ThermalAssistantPosition::BOTTOM_RIGHT_AVOID_IB):
+    rc.bottom = GetMainRect().bottom;
+    rc.right = GetMainRect().right;
+    rc.left = rc.right - sz;
+    break;
+  case (UISettings::ThermalAssistantPosition::BOTTOM_RIGHT):
+    rc.right = GetMainRect().right;
+    rc.left = rc.right - sz;
+    break;
+  default: // BOTTOM_LEFT
+    rc.left = GetMainRect().left;
+    rc.right = rc.left + sz;
+    break;
+  } 
   rc.top = rc.bottom - sz;
   thermal_assistant.Move(rc);
 }
@@ -617,7 +638,7 @@ MainWindow::RunTimer() noexcept
 
   UpdateGaugeVisibility();
 
-  if (!CommonInterface::GetUISettings().enable_thermal_assistant_gauge) {
+  if (CommonInterface::GetUISettings().thermal_assistant_position == UISettings::ThermalAssistantPosition::OFF) {
     thermal_assistant.Clear();
   } else if (!CommonInterface::Calculated().circling ||
              InputEvents::IsFlavour(_T("TA"))) {

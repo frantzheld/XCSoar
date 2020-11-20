@@ -29,12 +29,12 @@ Copyright_License {
 #include "Dialogs/WidgetDialog.hpp"
 #include "Form/ActionListener.hpp"
 #include "Device/Descriptor.hpp"
-#include "Util/Macros.hpp"
-#include "Util/StaticFifoBuffer.hxx"
+#include "util/Macros.hpp"
+#include "util/StaticFifoBuffer.hxx"
 #include "Language/Language.hpp"
 #include "Operation/MessageOperationEnvironment.hpp"
-#include "Event/DelayedNotify.hpp"
-#include "Thread/Mutex.hxx"
+#include "event/DelayedNotify.hpp"
+#include "thread/Mutex.hxx"
 #include "UIGlobals.hpp"
 
 enum Buttons {
@@ -62,7 +62,7 @@ public:
     :terminal(_terminal) {}
   virtual ~PortTerminalBridge() {}
 
-  virtual void DataReceived(const void *data, size_t length) {
+  bool DataReceived(const void *data, size_t length) noexcept {
     {
       const std::lock_guard<Mutex> lock(mutex);
       buffer.Shift();
@@ -74,6 +74,7 @@ public:
     }
 
     notify.SendNotification();
+    return true;
   }
 
 private:

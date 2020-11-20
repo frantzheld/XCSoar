@@ -36,8 +36,10 @@ Copyright_License {
 #include "Screen/Bitmap.hpp"
 #include "Screen/Util.hpp"
 #include "Math/Angle.hpp"
-#include "Util/AllocatedArray.hxx"
-#include "Util/Macros.hpp"
+#include "util/AllocatedArray.hxx"
+#include "util/Macros.hpp"
+#include "util/TStringView.hxx"
+#include "util/UTF8.hpp"
 
 #include "Shaders.hpp"
 #include "Program.hpp"
@@ -46,11 +48,11 @@ Copyright_License {
 #include <glm/gtc/type_ptr.hpp>
 
 #ifdef UNICODE
-#include "Util/ConvertString.hpp"
+#include "util/ConvertString.hpp"
 #endif
 
 #ifndef NDEBUG
-#include "Util/UTF8.hpp"
+#include "util/UTF8.hpp"
 #endif
 
 #include <cassert>
@@ -78,6 +80,19 @@ Canvas::InvertRectangle(PixelRect r)
 
   glDisable(GL_BLEND);
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+}
+
+static TStringView
+ClipText(TStringView text, int x, unsigned canvas_width) noexcept
+{
+  if (text.empty() || x >= int(canvas_width))
+    return nullptr;
+
+  unsigned max_width = canvas_width - x;
+  unsigned max_chars = max_width / 8u; // TODO: use real font width?
+
+  text.size = TruncateStringUTF8(text.data, max_chars, text.size);
+  return text;
 }
 
 void
@@ -109,9 +124,9 @@ Canvas::OutlineRectangleGL(int left, int top, int right, int bottom)
 {
   const ExactPixelPoint vertices[] = {
     PixelPoint{left, top},
-    PixelPoint{right, top},
-    PixelPoint{right, bottom},
-    PixelPoint{left, bottom},
+    PixelPoint{right - 1, top},
+    PixelPoint{right - 1, bottom - 1},
+    PixelPoint{left, bottom - 1},
   };
 
   const ScopeVertexPointer vp(vertices);
@@ -140,11 +155,11 @@ Canvas::DrawRaisedEdge(PixelRect &rc)
   Pen bright(1, Color(240, 240, 240));
   Select(bright);
   DrawTwoLinesExact(rc.left, rc.bottom - 2, rc.left, rc.top,
-                    rc.right - 2, rc.top);
+                    rc.right - 1, rc.top);
 
   Pen dark(1, Color(128, 128, 128));
   Select(dark);
-  DrawTwoLinesExact(rc.left + 1, rc.bottom - 1, rc.right - 1, rc.bottom - 1,
+  DrawTwoLinesExact(rc.left, rc.bottom - 1, rc.right - 1, rc.bottom - 1,
                     rc.right - 1, rc.top + 1);
 
   ++rc.left;
@@ -545,13 +560,13 @@ Canvas::DrawFocusRectangle(PixelRect rc)
 }
 
 const PixelSize
-Canvas::CalcTextSize(const TCHAR *text) const
+Canvas::CalcTextSize(TStringView text) const noexcept
 {
   assert(text != nullptr);
 #ifdef UNICODE
   const WideToUTF8Converter text2(text);
 #else
-  const char* text2 = text;
+  const StringView text2 = text;
   assert(ValidateUTF8(text));
 #endif
 
@@ -596,7 +611,11 @@ Canvas::DrawText(int x, int y, const TCHAR *text)
   if (font == nullptr)
     return;
 
-  GLTexture *texture = TextCache::Get(*font, text2);
+  const StringView text3 = ClipText(text2, x, size.cx);
+  if (text3.empty())
+    return;
+
+  GLTexture *texture = TextCache::Get(*font, text3);
   if (texture == nullptr)
     return;
 
@@ -631,7 +650,11 @@ Canvas::DrawTransparentText(int x, int y, const TCHAR *text)
   if (font == nullptr)
     return;
 
-  GLTexture *texture = TextCache::Get(*font, text2);
+  const StringView text3 = ClipText(text2, x, size.cx);
+  if (text3.empty())
+    return;
+
+  GLTexture *texture = TextCache::Get(*font, text3);
   if (texture == nullptr)
     return;
 
@@ -663,7 +686,11 @@ Canvas::DrawClippedText(int x, int y,
   if (font == nullptr)
     return;
 
-  GLTexture *texture = TextCache::Get(*font, text2);
+  const StringView text3 = ClipText(text2, 0, width);
+  if (text3.empty())
+    return;
+
+  GLTexture *texture = TextCache::Get(*font, text3);
   if (texture == nullptr)
     return;
 

@@ -25,13 +25,13 @@ Copyright_License {
 #include "InputConfig.hpp"
 #include "InputKeys.hpp"
 #include "InputLookup.hpp"
-#include "IO/LineReader.hpp"
-#include "Util/StringAPI.hxx"
-#include "Util/StaticString.hxx"
-#include "Util/StringStrip.hxx"
-#include "Util/EscapeBackslash.hpp"
-#include "Util/NumberParser.hpp"
-#include "Util/IterableSplitString.hxx"
+#include "io/LineReader.hpp"
+#include "util/StringAPI.hxx"
+#include "util/StaticString.hxx"
+#include "util/StringStrip.hxx"
+#include "util/EscapeBackslash.hpp"
+#include "util/NumberParser.hpp"
+#include "util/IterableSplitString.hxx"
 #include "LogFile.hpp"
 
 #include <tchar.h>
@@ -86,7 +86,10 @@ struct EventBuilder {
 
       // All modes are valid at this point
       int mode_id = config.MakeMode(token);
-      assert(mode_id >= 0);
+      if (mode_id < 0) {
+        LogFormat(_T("Too many modes: %.*s at %u"), int(token.size), token.data, line);
+        continue;
+      }
 
       // Make label event
       // TODO code: Consider Reuse existing entries...

@@ -54,18 +54,18 @@ doc/html/advanced/input/ALL		http://xcsoar.sourceforge.net/advanced/input/
 #include "Menu/ButtonLabel.hpp"
 #include "Profile/ProfileKeys.hpp"
 #include "Menu/MenuData.hpp"
-#include "IO/ConfiguredFile.hpp"
-#include "IO/LineReader.hpp"
+#include "io/ConfiguredFile.hpp"
+#include "io/LineReader.hpp"
 #include "Pan.hpp"
 #include "Dialogs/LockScreen.hpp"
 #include "Menu/MenuBar.hpp"
 #include "MapWindow/GlueMapWindow.hpp"
 
 #ifdef KOBO
-#include "Event/KeyCode.hpp"
+#include "event/KeyCode.hpp"
 #endif
 
-#include "Lua/InputEvent.hpp"
+#include "lua/InputEvent.hpp"
 
 #include <cassert>
 #include <tchar.h>
@@ -205,9 +205,9 @@ InputEvents::drawButtons(Mode mode, bool full)
   if (map != nullptr){
       if (mode != MODE_DEFAULT){
           // Set margin so that GlueMapWindow doesn't draw HUD underneath buttons
-          map->SetBottomMargin(menubar_height_scale_factor);
+          map->SetBottomMarginFactor(menubar_height_scale_factor);
       } else {
-          map->SetBottomMargin(0);
+          map->SetBottomMarginFactor(0);
       }
   }
 }

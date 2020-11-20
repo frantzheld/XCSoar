@@ -76,12 +76,19 @@ if 'mingw32' in actual_host_triplet:
     thirdparty_libs = [
         zlib,
         libsodium,
+        openssl,
         curl,
         lua,
     ]
+
+    # Explicitly disable _FORTIFY_SOURCE because it is broken with
+    # mingw.  This prevents some libraries such as libsodium to enable
+    # it.
+    cppflags += ' -D_FORTIFY_SOURCE=0'
 elif re.match('(arm.*|aarch64)-apple-darwin', actual_host_triplet) is not None:
     thirdparty_libs = [
         libsodium,
+        openssl,
         curl,
         lua,
         proj,
@@ -101,6 +108,7 @@ elif 'apple-darwin' in actual_host_triplet:
 elif target == 'ANDROID':
     thirdparty_libs = [
         libsodium,
+        openssl,
         curl,
         lua,
         proj,
@@ -112,6 +120,7 @@ elif toolchain_host_triplet.endswith('-musleabihf'):
         zlib,
         libsodium,
         freetype,
+        openssl,
         curl,
         libpng,
         libjpeg,
@@ -127,6 +136,7 @@ else:
         zlib,
         libsodium,
         freetype,
+        openssl,
         curl,
         libpng,
         libjpeg,

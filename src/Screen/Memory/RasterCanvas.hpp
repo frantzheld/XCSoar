@@ -28,8 +28,8 @@ Copyright_License {
 #include "Bresenham.hpp"
 #include "Murphy.hpp"
 #include "Screen/Point.hpp"
-#include "Util/AllocatedArray.hxx"
-#include "Util/Compiler.h"
+#include "util/AllocatedArray.hxx"
+#include "util/Compiler.h"
 
 #include <cassert>
 
@@ -338,7 +338,7 @@ public:
     DrawHLine(x1, x2, y1, c, operations);
     DrawHLine(x1, x2, y2 - 1, c, operations);
     DrawVLine(x1, y1 + 1, y2 - 1, c, operations);
-    DrawVLine(x2, y1 + 1, y2 - 1, c, operations);
+    DrawVLine(x2 - 1, y1 + 1, y2 - 1, c, operations);
   }
 
   void DrawRectangle(int x1, int y1, int x2, int y2, color_type c) {

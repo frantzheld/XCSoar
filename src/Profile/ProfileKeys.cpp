@@ -133,6 +133,7 @@ const char TeamcodeRefWaypoint[] = "TeamcodeRefWaypoint";
 const char AppInfoBoxBorder[] = "AppInfoBoxBorder";
 const char ShowMenuButton[] = "ShowMenuButton";
 const char CursorSize[] = "CursorSize";
+const char CursorColorsInverted[] = "CursorColorsInverted";
 
 const char AppAveNeedle[] = "AppAveNeedle";
 const char AppAveThermalNeedle[] = "AppAveThermalNeedle";
@@ -150,6 +151,7 @@ const char EnableFLARMMap[] = "EnableFLARMDisplay";
 const char EnableFLARMGauge[] = "EnableFLARMGauge";
 const char AutoCloseFlarmDialog[] = "AutoCloseFlarmDialog";
 const char EnableTAGauge[] = "EnableTAGauge";
+const char TAPosition[] = "TAPosition";
 const char EnableThermalProfile[] = "EnableThermalProfile";
 const char GliderScreenPosition[] = "GliderScreenPosition";
 const char SetSystemTimeFromGPS[] = "SetSystemTimeFromGPS";

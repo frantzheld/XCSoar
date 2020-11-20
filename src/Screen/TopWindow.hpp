@@ -35,8 +35,8 @@ Copyright_License {
 #endif
 
 #ifdef ANDROID
-#include "Thread/Mutex.hxx"
-#include "Thread/Cond.hxx"
+#include "thread/Mutex.hxx"
+#include "thread/Cond.hxx"
 
 struct Event;
 
@@ -50,7 +50,7 @@ struct SDL_Window;
 #include <tchar.h>
 
 #ifdef SOFTWARE_ROTATE_DISPLAY
-enum class DisplayOrientation : uint8_t;
+#include "DisplayOrientation.hpp"
 #endif
 
 #ifndef USE_WINUSER
@@ -80,6 +80,9 @@ class TopWindowStyle : public WindowStyle {
 #endif
 #ifdef ENABLE_SDL
   bool resizable = false;
+#endif
+#ifdef SOFTWARE_ROTATE_DISPLAY
+  DisplayOrientation initial_orientation = DisplayOrientation::DEFAULT;
 #endif
 
 public:
@@ -124,6 +127,15 @@ public:
     return false;
 #endif
   }
+#ifdef SOFTWARE_ROTATE_DISPLAY
+  void InitialOrientation(DisplayOrientation orientation) {
+    initial_orientation = orientation;
+  }
+
+  DisplayOrientation GetInitialOrientation() const {
+    return initial_orientation;
+  }
+#endif
 };
 
 /**
@@ -144,6 +156,7 @@ class TopWindow : public ContainerWindow {
 #endif
 #ifdef DRAW_MOUSE_CURSOR
   uint8_t cursor_size = 1;
+  bool invert_cursor_colors = false;
 #endif
 
 #ifndef USE_WINUSER
@@ -154,6 +167,13 @@ class TopWindow : public ContainerWindow {
 #ifdef ANDROID
   Mutex paused_mutex;
   Cond paused_cond;
+
+  /**
+   * Is the main (UI) thread currently inside RunEventLoop()?  If not,
+   * then the Android Activity thread should not wait for
+   * #paused_cond, to avoid deadlocks.
+   */
+  bool running = false;
 
   /**
    * Is the application currently paused?  While this flag is set, no
@@ -343,6 +363,10 @@ public:
 #ifdef DRAW_MOUSE_CURSOR
   void SetCursorSize(const uint8_t &cursorSize) noexcept {
     cursor_size = cursorSize;
+  }
+
+  void SetCursorColorsInverted(bool inverted) {
+    invert_cursor_colors = inverted;
   }
 #endif
 

@@ -24,7 +24,7 @@ Copyright_License {
 #ifndef XCSOAR_SCREEN_TOP_CANVAS_HPP
 #define XCSOAR_SCREEN_TOP_CANVAS_HPP
 
-#include "Util/Compiler.h"
+#include "util/Compiler.h"
 
 #ifdef USE_MEMORY_CANVAS
 #include "Screen/Memory/PixelTraits.hpp"
@@ -266,6 +266,13 @@ public:
 #endif
 
 #ifdef USE_FB
+  /**
+   * Ask the kernel for the frame buffer's current physical size.
+   * This is used by CheckResize().
+   */
+  gcc_pure
+  PixelSize GetPhysicalSize() const;
+
   /**
    * Check if the screen has been resized.
    *

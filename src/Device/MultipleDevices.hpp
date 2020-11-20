@@ -31,7 +31,7 @@ Copyright_License {
 
 #include "Features.hpp"
 #include "Device/Port/Listener.hpp"
-#include "Thread/Mutex.hxx"
+#include "thread/Mutex.hxx"
 
 #include <array>
 #include <list>
@@ -100,8 +100,8 @@ public:
 
 private:
   /* virtual methods from class PortListener */
-  void PortStateChanged() override;
-  void PortError(const char *msg) override;
+  void PortStateChanged() noexcept override;
+  void PortError(const char *msg) noexcept override;
 };
 
 #endif

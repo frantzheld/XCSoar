@@ -26,7 +26,7 @@ Copyright_License {
 #include "DataField/Base.hpp"
 #include "Screen/Canvas.hpp"
 #include "Screen/Layout.hpp"
-#include "Event/KeyCode.hpp"
+#include "event/KeyCode.hpp"
 #include "Screen/Features.hpp"
 #include "Dialogs/DataField.hpp"
 
@@ -132,7 +132,7 @@ WndProperty::~WndProperty() noexcept
 unsigned
 WndProperty::GetRecommendedCaptionWidth() const noexcept
 {
-  return look.text_font.TextSize(caption).cx + Layout::GetTextPadding();
+  return look.text_font.TextSize(caption).cx + Layout::GetTextPadding() * 2;
 }
 
 void
@@ -304,7 +304,7 @@ WndProperty::OnPaint(Canvas &canvas)
       org.x = edit_rc.left;
       org.y = edit_rc.top - tsize.cy;
     } else {
-      org.x = caption_width - tsize.cx;
+      org.x = caption_width - tsize.cx - Layout::GetTextPadding();
       org.y = (GetHeight() - tsize.cy) / 2;
     }
 

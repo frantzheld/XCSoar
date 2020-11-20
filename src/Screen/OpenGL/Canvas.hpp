@@ -32,7 +32,7 @@ Copyright_License {
 #include "Screen/Brush.hpp"
 #include "Screen/Font.hpp"
 #include "Screen/Pen.hpp"
-#include "Util/Compiler.h"
+#include "util/Compiler.h"
 
 #include <tchar.h>
 
@@ -130,8 +130,16 @@ public:
     pen = Pen(1, COLOR_WHITE);
   }
 
+  void SelectWhitePen(unsigned width) {
+    pen = Pen(width, COLOR_WHITE);
+  }
+
   void SelectBlackPen() {
     pen = Pen(1, COLOR_BLACK);
+  }
+
+  void SelectBlackPen(unsigned width) {
+    pen = Pen(width, COLOR_BLACK);
   }
 
   void SelectHollowBrush() {
@@ -328,7 +336,7 @@ public:
   void DrawFocusRectangle(PixelRect rc);
 
   gcc_pure
-  const PixelSize CalcTextSize(const TCHAR *text, size_t length) const;
+  const PixelSize CalcTextSize(TStringView text) const noexcept;
 
   gcc_pure
   const PixelSize CalcTextSize(const TCHAR *text) const;

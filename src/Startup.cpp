@@ -67,13 +67,13 @@ Copyright_License {
 #include "CalculationThread.hpp"
 #include "Replay/Replay.hpp"
 #include "LocalPath.hpp"
-#include "IO/FileCache.hpp"
-#include "IO/Async/AsioThread.hpp"
-#include "IO/Async/GlobalAsioThread.hpp"
-#include "Net/HTTP/DownloadManager.hpp"
+#include "io/FileCache.hpp"
+#include "io/async/AsioThread.hpp"
+#include "io/async/GlobalAsioThread.hpp"
+#include "net/http/DownloadManager.hpp"
 #include "Hardware/DisplayDPI.hpp"
 #include "Hardware/DisplayGlue.hpp"
-#include "Util/Compiler.h"
+#include "util/Compiler.h"
 #include "NMEA/Aircraft.hpp"
 #include "Waypoint/Waypoints.hpp"
 #include "Waypoint/WaypointGlue.hpp"
@@ -97,10 +97,10 @@ Copyright_License {
 #include "Tracking/TrackingGlue.hpp"
 #include "Units/Units.hpp"
 #include "Formatter/UserGeoPointFormatter.hpp"
-#include "Thread/Debug.hpp"
+#include "thread/Debug.hpp"
 
-#include "Lua/StartFile.hpp"
-#include "Lua/Background.hpp"
+#include "lua/StartFile.hpp"
+#include "lua/Background.hpp"
 
 #ifdef ENABLE_OPENGL
 #include "Screen/OpenGL/Globals.hpp"
@@ -183,8 +183,6 @@ Startup()
   Net::DownloadManager::Initialise();
 #endif
 
-  LogFormat("Display dpi=%u,%u", Display::GetXDPI(), Display::GetYDPI());
-
   // Creates the main window
 
   TopWindowStyle style;
@@ -193,11 +191,17 @@ Startup()
 
   style.Resizable();
 
+#ifdef SOFTWARE_ROTATE_DISPLAY
+  style.InitialOrientation(Display::DetectInitialOrientation());
+#endif
+
   MainWindow *const main_window = CommonInterface::main_window =
     new MainWindow();
   main_window->Create(SystemWindowSize(), style);
   if (!main_window->IsDefined())
     return false;
+
+  LogFormat("Display dpi=%u,%u", Display::GetXDPI(), Display::GetYDPI());
 
 #ifdef ENABLE_OPENGL
   LogFormat("OpenGL: "
@@ -262,9 +266,7 @@ Startup()
 
   main_window->InitialiseConfigured();
 
-  {
-    file_cache = new FileCache(LocalPath(_T("cache")));
-  }
+  file_cache = new FileCache(LocalPath(_T("cache")));
 
   ReadLanguageFile();
 

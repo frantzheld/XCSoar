@@ -26,13 +26,14 @@ Copyright_License {
 #include "Language/Language.hpp"
 #include "Widget/WindowWidget.hpp"
 #include "Screen/Canvas.hpp"
-#include "Event/KeyCode.hpp"
+#include "event/KeyCode.hpp"
 #include "UIGlobals.hpp"
 #include "Look/DialogLook.hpp"
-#include "Util/CharUtil.hxx"
-#include "Util/Macros.hpp"
-#include "Util/StringStrip.hxx"
-#include "Util/TruncateString.hpp"
+#include "util/CharUtil.hxx"
+#include "util/Macros.hpp"
+#include "util/StringStrip.hxx"
+#include "util/TruncateString.hpp"
+#include "util/TStringView.hxx"
 
 #include <algorithm>
 
@@ -159,8 +160,8 @@ KnobTextEntryWindow::OnPaint(Canvas &canvas)
   canvas.Select(look.text_font);
 
   PixelSize tsize = canvas.CalcTextSize(buffer);
-  PixelSize tsizec = canvas.CalcTextSize(buffer, cursor);
-  PixelSize tsizea = canvas.CalcTextSize(buffer, cursor + 1);
+  PixelSize tsizec = canvas.CalcTextSize({buffer, cursor});
+  PixelSize tsizea = canvas.CalcTextSize({buffer, cursor + 1});
 
   BulkPixelPoint p[5];
   p[0].x = 10;

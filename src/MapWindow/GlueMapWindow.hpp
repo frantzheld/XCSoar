@@ -25,18 +25,18 @@ Copyright_License {
 #define XCSOAR_GLUE_MAP_WINDOW_HPP
 
 #include "MapWindow.hpp"
-#include "Time/PeriodClock.hpp"
+#include "time/PeriodClock.hpp"
 #include "UIUtil/TrackingGestureManager.hpp"
 #include "UIUtil/KineticManager.hpp"
 #include "Renderer/ThermalBandRenderer.hpp"
 #include "Renderer/FinalGlideBarRenderer.hpp"
 #include "Renderer/VarioBarRenderer.hpp"
-#include "Event/Timer.hpp"
-#include "Event/Notify.hpp"
+#include "event/Timer.hpp"
+#include "event/Notify.hpp"
 #include "Screen/Features.hpp"
 
 #ifdef ENABLE_OPENGL
-#include "Event/PeriodicTimer.hpp"
+#include "event/PeriodicTimer.hpp"
 #endif
 
 #include <array>
@@ -155,7 +155,14 @@ public:
   void SetMapSettings(const MapSettings &new_value);
   void SetComputerSettings(const ComputerSettings &new_value);
   void SetUIState(const UIState &new_value);
-  void SetBottomMargin(unsigned int margin);
+
+  /**
+   * Sets a relative margin at the bottom of the screen where no HUD
+   * elements should be drawn.
+   */
+  void SetBottomMargin(unsigned margin) noexcept;
+
+  void SetBottomMarginFactor(unsigned margin_factor) noexcept;
 
   /**
    * Update the blackboard from DeviceBlackboard and

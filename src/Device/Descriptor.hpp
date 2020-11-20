@@ -32,13 +32,13 @@ Copyright_License {
 #include "Device/Parser.hpp"
 #include "RadioFrequency.hpp"
 #include "NMEA/ExternalSettings.hpp"
-#include "Time/PeriodClock.hpp"
+#include "time/PeriodClock.hpp"
 #include "Job/Async.hpp"
-#include "Event/Notify.hpp"
-#include "Thread/Mutex.hxx"
-#include "Thread/Debug.hpp"
-#include "Util/tstring.hpp"
-#include "Util/StaticFifoBuffer.hxx"
+#include "event/Notify.hpp"
+#include "thread/Mutex.hxx"
+#include "thread/Debug.hpp"
+#include "util/tstring.hpp"
+#include "util/StaticFifoBuffer.hxx"
 #include "Android/GliderLink.hpp"
 
 #include <chrono>
@@ -536,14 +536,14 @@ private:
   void OnJobFinished() noexcept;
 
   /* virtual methods from class PortListener */
-  void PortStateChanged() override;
-  void PortError(const char *msg) override;
+  void PortStateChanged() noexcept override;
+  void PortError(const char *msg) noexcept override;
 
   /* virtual methods from DataHandler  */
-  void DataReceived(const void *data, size_t length) override;
+  bool DataReceived(const void *data, size_t length) noexcept override;
 
   /* virtual methods from PortLineHandler */
-  void LineReceived(const char *line) override;
+  bool LineReceived(const char *line) noexcept override;
 };
 
 #endif
